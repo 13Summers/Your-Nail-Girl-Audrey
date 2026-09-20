@@ -1,3 +1,4 @@
+import { useLocation, useNavigate } from "react-router";
 import { useState, useEffect, useRef, useCallback, type CSSProperties } from "react";
 import { motion } from "motion/react";
 import { Instagram, Star, MapPin, Mail, Menu, X, ArrowRight, Calendar, Sparkles, Heart, Clock, Eye, EyeOff, Upload, Copy, Check, LogOut, User as UserIcon, ImagePlus, Trash2, ChevronRight, Search, Edit2, Plus, Minus, ShieldCheck, Users, DollarSign, ChevronDown } from "lucide-react";
@@ -3713,15 +3714,55 @@ function AdminPage({ navigate }: { navigate: (p: Page) => void }) {
 
 // ── Main App ─────────────────────────────────────────────────────────────────
 export default function App() {
-  const [page, setPage] = useState<Page>("home");
-  const [termsSection, setTermsSection] = useState<string | undefined>();
+ const location = useLocation();
+const routerNavigate = useNavigate();
+
+const pathToPage: Record<string, Page> = {
+  "/": "home",
+  "/my-work": "portfolio",
+  "/services": "services",
+  "/about": "about",
+  "/book": "book",
+  "/privacy": "privacy",
+  "/terms": "terms",
+  "/signin": "signin",
+  "/signup": "signup",
+  "/dashboard": "dashboard",
+  "/admin": "admin",
+};
+
+const page: Page = pathToPage[location.pathname] ?? "home";
+
+const termsSection =
+  page === "terms" && location.hash
+    ? location.hash.replace("#", "")
+    : undefined;
   const [user, setUser] = useState<AppUser | null>(loadUser);
 
   const navigate = (p: Page, sectionId?: string) => {
-    setTermsSection(p === "terms" ? sectionId : undefined);
-    setPage(p);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const pageToPath: Record<Page, string> = {
+    home: "/",
+    portfolio: "/my-work",
+    services: "/services",
+    about: "/about",
+    book: "/book",
+    privacy: "/privacy",
+    terms: "/terms",
+    signin: "/signin",
+    signup: "/signup",
+    dashboard: "/dashboard",
+    admin: "/admin",
   };
+
+  let path = pageToPath[p];
+
+  if (p === "terms" && sectionId) {
+    path += `#${sectionId}`;
+  }
+
+  routerNavigate(path);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
 
   const handleSignIn = (u: AppUser) => { setUser(u); saveUser(u); };
   const handleSignOut = () => { clearUser(); setUser(null); navigate("home"); };
