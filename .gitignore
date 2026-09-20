@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.DS_Store
+.vscode/
+
+.env
+.env.*
+!.env.example
+
+# Supabase local CLI state
+supabase/.temp/
+supabase/.branches/
