@@ -948,7 +948,7 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="w-full h-full object-contain object-bottom"
+              className="hero-image-reveal w-full h-full object-contain object-bottom"
             />
           </div>
         </div>
@@ -967,7 +967,7 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="absolute inset-0 w-full h-full object-contain object-center"
+              className="hero-image-reveal absolute inset-0 w-full h-full object-contain object-center"
             />
           </div>
 
