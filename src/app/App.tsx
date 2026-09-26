@@ -18,16 +18,8 @@ import imgNailArtService from "@/imports/HomepageDesktop/Nail Art Image.png";
 import imgNailFixService from "@/imports/HomepageDesktop/Nail Fix image.png";
 import imgOverlayService from "@/imports/HomepageDesktop/Nail service image.png";
 import imgGelPolishService from "@/imports/HomepageDesktop/Product Image.png";
-import imgStepSelectService from "@/imports/HomepageDesktop/creative nail.png";
-import imgStepLength from "@/imports/HomepageDesktop/nail legnth.png";
-import imgStepCreative from "@/imports/HomepageDesktop/Nail polish.png";
-import imgStepDot from "@/imports/HomepageDesktop/step-dot-1.png";
-import imgWatermark01 from "@/imports/HomepageDesktop/watermark-01.png";
-import imgWatermark02 from "@/imports/HomepageDesktop/watermark-02.png";
-import imgWatermark03 from "@/imports/HomepageDesktop/watermark-03.png";
 import imgQuietEscapeBg from "@/imports/HomepageDesktop/bckgrnd-1.png";
 import imgQuietEscape2Bg from "@/imports/HomepageDesktop/bckgrnd-2.png";
-import imgQuietEscape3Bg from "@/imports/HomepageDesktop/bckgrnd-3.png";
 import imgQuietEscape4Bg from "@/imports/HomepageDesktop/bckgrnd-4.png";
 import imgFinBackground from "@/imports/HomepageDesktop/fin-background.png";
 import imgSDP9631 from "@/imports/HomepageDesktop/SDP_9631 small.png";
@@ -35,8 +27,6 @@ import imgSDP9540 from "@/imports/HomepageDesktop/SDP_9540.png";
 import imgSDP0128 from "@/imports/HomepageDesktop/SDP_0128.png";
 import asset5 from "@/imports/HomepageDesktop/SVG/Asset 5.svg";
 import pocket from "@/imports/Frame2/pocket.png";
-import imgSDP9647 from "@/imports/HomepageDesktop/SDP_9647.png";
-import imgTestimonialsBg from "@/imports/HomepageDesktop/background-final-cta-opaque.png";
 import asset35 from "@/imports/HomepageDesktop/SVG/Asset 35.svg";
 import asset30 from "@/imports/HomepageDesktop/SVG/Asset 30.svg";
 import asset2 from "@/imports/HomepageDesktop/SVG/Asset 2.svg";
@@ -427,7 +417,13 @@ function Nav({ current, navigate, user, onSignOut }: {
           )}
         </div>
 
-        <button className="md:hidden text-[#3a291f]" onClick={() => setOpen(!open)}>
+        <button
+          type="button"
+          aria-label={open ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={open}
+          onClick={() => setOpen(!open)}
+          className="md:hidden text-[#3a291f] min-w-11 min-h-11 flex items-center justify-center"
+        >
           {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
@@ -442,7 +438,7 @@ function Nav({ current, navigate, user, onSignOut }: {
             </button>
           ))}
           <div className="flex flex-col gap-3 pt-2 border-t border-[rgba(58,41,31,0.1)]">
-            {user ? (
+            {user && (
               <>
                 <button onClick={() => { navigate("dashboard"); setOpen(false); }}
                   className="text-left text-sm font-['Instrument_Sans',sans-serif] font-medium text-[#3a291f]">
@@ -453,9 +449,6 @@ function Nav({ current, navigate, user, onSignOut }: {
                   Sign Out
                 </button>
               </>
-            ) : (
-              <button onClick={() => { navigate("signin"); setOpen(false); }}
-                className="text-left text-sm font-['Instrument_Sans',sans-serif] font-medium text-[#3a291f]">Sign In / Join</button>
             )}
             <button onClick={() => { navigate("book"); setOpen(false); }}
               className="bg-[#3A291F] text-[#FAF5EF] text-sm font-semibold uppercase tracking-widest px-6 py-3 rounded-full text-center transition-colors hover:bg-[#6B4F3A]">
@@ -906,9 +899,9 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
         <div className="absolute inset-0 bg-gradient-to-l from-[rgba(255,255,255,0)] to-[rgba(255,255,255,0.73)]" />
 
         {/* ── Mobile layout: stacked ── */}
-        <div className="relative z-10 flex flex-col md:hidden min-h-[70svh]">
+        <div className="relative z-10 flex min-h-[calc(100svh-5rem)] flex-col pt-32 md:hidden">
           {/* Text content */}
-          <div className="flex-1 flex flex-col justify-center px-6">
+          <div className="px-6 pb-8">
             <motion.div initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }} className="space-y-7">
               <div>
                 <p className="text-[14px] uppercase tracking-[4px] font-['Instrument_Sans',sans-serif] text-[#6B4F3A] mb-4">North Salt Lake, Utah</p>
@@ -927,7 +920,7 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.25 }}
-            className="w-full h-[60vw] min-h-[260px] relative"
+            className="relative mt-auto h-[68svh] min-h-[460px] max-h-[620px] w-full"
           >
             <img
               src={imgHeroImage}
@@ -3769,22 +3762,48 @@ const termsSection =
   const handleUpdate = (u: AppUser) => { setUser(u); saveUser(u); };
 
 
-  return (
-    <div className="min-h-screen bg-[#f5ece0] font-['Instrument_Sans',sans-serif]">
-      {page !== "admin" && <Nav current={page} navigate={navigate} user={user} onSignOut={handleSignOut} />}
+return (
+  <div className="min-h-screen bg-[#f5ece0] font-['Instrument_Sans',sans-serif]">
+    {page !== "admin" && (
+      <Nav
+        current={page}
+        navigate={navigate}
+        user={user}
+        onSignOut={handleSignOut}
+      />
+    )}
+
+    <main>
       {page === "home" && <HomePage navigate={navigate} user={user} />}
       {page === "book" && <BookNowPage user={user} navigate={navigate} />}
       {page === "portfolio" && <PortfolioPage />}
       {page === "services" && <ServicesPage navigate={navigate} />}
       {page === "about" && <AboutPage navigate={navigate} />}
       {page === "privacy" && <PrivacyPage navigate={navigate} />}
-      {page === "terms" && <TermsPage navigate={navigate} sectionId={termsSection} />}
-      {page === "signin" && <SignInPage navigate={navigate} onSignIn={handleSignIn} />}
-      {page === "signup" && <SignUpPage navigate={navigate} onSignIn={handleSignIn} />}
-      {page === "dashboard" && user && <DashboardPage user={user} navigate={navigate} onUpdate={handleUpdate} onSignOut={handleSignOut} />}
-      {page === "dashboard" && !user && <SignInPage navigate={navigate} onSignIn={handleSignIn} />}
+      {page === "terms" && (
+        <TermsPage navigate={navigate} sectionId={termsSection} />
+      )}
+      {page === "signin" && (
+        <SignInPage navigate={navigate} onSignIn={handleSignIn} />
+      )}
+      {page === "signup" && (
+        <SignUpPage navigate={navigate} onSignIn={handleSignIn} />
+      )}
+      {page === "dashboard" && user && (
+        <DashboardPage
+          user={user}
+          navigate={navigate}
+          onUpdate={handleUpdate}
+          onSignOut={handleSignOut}
+        />
+      )}
+      {page === "dashboard" && !user && (
+        <SignInPage navigate={navigate} onSignIn={handleSignIn} />
+      )}
       {page === "admin" && <AdminPage navigate={navigate} />}
-      {page !== "admin" && <Footer navigate={navigate} />}
-    </div>
-  );
+    </main>
+
+    {page !== "admin" && <Footer navigate={navigate} />}
+  </div>
+);
 }
