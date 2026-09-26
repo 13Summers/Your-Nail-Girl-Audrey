@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router";
-import { useState, useEffect, useRef, useCallback, type CSSProperties } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, type CSSProperties } from "react";
 import { motion } from "motion/react";
 import { Instagram, Star, MapPin, Mail, Menu, X, ArrowRight, Calendar, Sparkles, Heart, Clock, Eye, EyeOff, Upload, Copy, Check, LogOut, User as UserIcon, ImagePlus, Trash2, ChevronRight, Search, Edit2, Plus, Minus, ShieldCheck, Users, DollarSign, ChevronDown } from "lucide-react";
 
@@ -602,9 +602,9 @@ function PrivacyPage({ navigate }: { navigate: (p: Page) => void }) {
 
 // ── TERMS OF SERVICE ─────────────────────────────────────────────────────────
 function TermsPage({ navigate, sectionId }: { navigate: (p: Page, sectionId?: string) => void; sectionId?: string }) {
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!sectionId) return;
-    requestAnimationFrame(() => document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: "auto", block: "start" });
   }, [sectionId]);
 
   const sections = [
@@ -3705,6 +3705,11 @@ const termsSection =
     : undefined;
   const [user, setUser] = useState<AppUser | null>(loadUser);
 
+  useLayoutEffect(() => {
+    if (location.hash) return;
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [location.key, location.hash]);
+
   const navigate = (p: Page, sectionId?: string) => {
   const pageToPath: Record<Page, string> = {
     home: "/",
@@ -3727,7 +3732,6 @@ const termsSection =
   }
 
   routerNavigate(path);
-  window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
   const handleSignIn = (u: AppUser) => { setUser(u); saveUser(u); };
