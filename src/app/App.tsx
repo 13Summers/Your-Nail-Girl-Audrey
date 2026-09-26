@@ -937,7 +937,12 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
           </div>
 
           {/* Image — full width below content */}
-          <div className="relative mt-auto h-[68svh] min-h-[460px] max-h-[620px] w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.2 }}
+            className="relative mt-auto h-[68svh] min-h-[460px] max-h-[620px] w-full"
+          >
             <img
               src={imgHeroImage}
               srcSet="/images/audrey-hero-320.avif 320w, /images/audrey-hero-480.avif 480w, /images/audrey-hero-800.avif 800w, /images/audrey-hero-1200.avif 1200w"
@@ -948,15 +953,20 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="hero-image-reveal w-full h-full object-contain object-bottom"
+              className="w-full h-full object-contain object-bottom"
             />
-          </div>
+          </motion.div>
         </div>
 
         {/* ── Desktop layout: side-by-side, reduced height ── */}
         <div className="hidden md:block h-[70svh] min-h-[480px]">
           {/* Image — right half, absolute */}
-          <div className="absolute right-0 top-0 bottom-0 w-1/2 pointer-events-none">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.2 }}
+            className="absolute right-0 top-0 bottom-0 w-1/2 pointer-events-none"
+          >
             <img
               src={imgHeroImage}
               srcSet="/images/audrey-hero-480.avif 480w, /images/audrey-hero-800.avif 800w, /images/audrey-hero-1200.avif 1200w"
@@ -967,9 +977,9 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className="hero-image-reveal absolute inset-0 w-full h-full object-contain object-center"
+              className="absolute inset-0 w-full h-full object-contain object-center"
             />
-          </div>
+          </motion.div>
 
           {/* Text — left half, vertically centered */}
           <div className="relative z-10 h-full flex items-center px-16 xl:px-24">
