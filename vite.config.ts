@@ -16,6 +16,35 @@ function figmaAssetResolver() {
   }
 }
 
+function inlineCssForProduction() {
+  return {
+    name: 'inline-css-for-production',
+    apply: 'build',
+    enforce: 'post',
+    generateBundle(_options, bundle) {
+      const htmlAsset = Object.values(bundle).find(
+        (item) => item.type === 'asset' && item.fileName === 'index.html',
+      )
+      if (!htmlAsset || htmlAsset.type !== 'asset' || typeof htmlAsset.source !== 'string') return
+
+      const cssAssets = Object.values(bundle).filter(
+        (item) => item.type === 'asset' && item.fileName.endsWith('.css'),
+      )
+      if (cssAssets.length === 0) return
+
+      const css = cssAssets
+        .map((item) => (item.type === 'asset' ? String(item.source) : ''))
+        .join('\n')
+
+      htmlAsset.source = htmlAsset.source
+        .replace(/<link rel="stylesheet"[^>]*href="[^"]+\.css"[^>]*>/g, '')
+        .replace('</head>', `<style>${css}</style></head>`)
+
+      cssAssets.forEach((item) => delete bundle[item.fileName])
+    },
+  }
+}
+
 export default defineConfig({
   plugins: [
     figmaAssetResolver(),
@@ -23,6 +52,7 @@ export default defineConfig({
     // Tailwind is not being actively used – do not remove them
     react(),
     tailwindcss(),
+    inlineCssForProduction(),
   ],
   resolve: {
     alias: {

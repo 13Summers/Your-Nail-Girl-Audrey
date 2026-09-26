@@ -4,35 +4,26 @@ import { motion } from "motion/react";
 import { Instagram, Star, MapPin, Mail, Menu, X, ArrowRight, Calendar, Sparkles, Heart, Clock, Eye, EyeOff, Upload, Copy, Check, LogOut, User as UserIcon, ImagePlus, Trash2, ChevronRight, Search, Edit2, Plus, Minus, ShieldCheck, Users, DollarSign, ChevronDown } from "lucide-react";
 
 const SUPABASE_PROJECT_ID = "vrodyyjilujwjpbvdzkr";
-import imgFrame2 from "@/imports/HomepageDesktop/e69d78d1a00d5fe688d283a6c69fbf69a9aa5013.png";
-import imgHeroImage from "@/imports/HomepageDesktop/bcf9b889c2c7102b590fc8ac64436f6803a343e6.png";
-import imgStudio1 from "@/imports/HomepageDesktop/48a11c40cc3eb52ed458f2d72ad7caccdbaae61e.png";
-import imgStudio2 from "@/imports/HomepageDesktop/efa0bd5e2ea18d83f03f6d64a48bfab6ca579348.png";
-import imgStudio3 from "@/imports/HomepageDesktop/SDP_9655.png";
-import imgStudio4 from "@/imports/HomepageDesktop/SDP_0114.png";
-import imgValueProp from "@/imports/HomepageDesktop/audrey-value-prop.png";
-import imgExtensionsService from "@/imports/HomepageDesktop/Extensions Image.png";
-import imgFillService from "@/imports/HomepageDesktop/Fill Image.png";
-import imgFullRemovalService from "@/imports/HomepageDesktop/Full Removal Image.png";
-import imgNailArtService from "@/imports/HomepageDesktop/Nail Art Image.png";
-import imgNailFixService from "@/imports/HomepageDesktop/Nail Fix image.png";
-import imgOverlayService from "@/imports/HomepageDesktop/Nail service image.png";
-import imgGelPolishService from "@/imports/HomepageDesktop/Product Image.png";
-import imgQuietEscapeBg from "@/imports/HomepageDesktop/bckgrnd-1.png";
-import imgQuietEscape2Bg from "@/imports/HomepageDesktop/bckgrnd-2.png";
-import imgQuietEscape4Bg from "@/imports/HomepageDesktop/bckgrnd-4.png";
-import imgFinBackground from "@/imports/HomepageDesktop/fin-background.png";
-import imgSDP9631 from "@/imports/HomepageDesktop/SDP_9631 small.png";
-import imgSDP9540 from "@/imports/HomepageDesktop/SDP_9540.png";
-import imgSDP0128 from "@/imports/HomepageDesktop/SDP_0128.png";
 import asset5 from "@/imports/HomepageDesktop/SVG/Asset 5.svg";
-import pocket from "@/imports/Frame2/pocket.png";
 import asset35 from "@/imports/HomepageDesktop/SVG/Asset 35.svg";
 import asset30 from "@/imports/HomepageDesktop/SVG/Asset 30.svg";
 import asset2 from "@/imports/HomepageDesktop/SVG/Asset 2.svg";
 import asset7 from "@/imports/HomepageDesktop/SVG/Asset 7.svg";
 import asset6 from "@/imports/HomepageDesktop/SVG/Asset 6.svg";
 import logo from "@/imports/HomepageDesktop/SVG/YNG-Logo.svg";
+
+const imgFrame2 = "/images/snake-print-1600.avif";
+const imgHeroImage = "/images/audrey-hero-800.avif";
+const imgStudio3 = "/images/book-audrey-640.avif";
+const imgStudio4 = "/images/services-audrey-640.avif";
+const imgValueProp = "/images/audrey-value-510.avif";
+const imgQuietEscapeBg = "/images/services-bg-1600.avif";
+const imgQuietEscape2Bg = "/images/sections-bg-1600.avif";
+const imgFinBackground = "/images/final-bg-1600.avif";
+const imgSDP9631 = "/images/final-audrey-570.avif";
+const imgSDP9540 = "/images/final-glass-600.avif";
+const imgSDP0128 = "/images/policy-audrey-480.avif";
+const pocket = "/images/about-audrey-640.avif";
 
 
 type Page = "home" | "portfolio" | "services" | "about" | "book" | "privacy" | "terms" | "signin" | "signup" | "dashboard" | "admin";
@@ -371,6 +362,8 @@ function Nav({ current, navigate, user, onSignOut }: {
           <img
             src={logo}
             alt="Your Nail Girl Audrey"
+            width="335"
+            height="100"
             className="h-12 w-auto"
           />
         </button>
@@ -706,7 +699,9 @@ function TermsPage({ navigate, sectionId }: { navigate: (p: Page, sectionId?: st
 function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUser | null }) {
   const [scrollY, setScrollY] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [loadInstagramFeed, setLoadInstagramFeed] = useState(false);
   const testimonialTrackRef = useRef<HTMLDivElement | null>(null);
+  const instagramSectionRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const h = () => setScrollY(window.scrollY);
@@ -819,16 +814,33 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
     return () => window.clearInterval(intervalId);
   }, []);
 
-  // Load Behold widget script for Instagram feed (used on Home and Portfolio)
   useEffect(() => {
-    if (!BEHOLD_FEED_ID) return;
+    const section = instagramSectionRef.current;
+    if (!section || !BEHOLD_FEED_ID) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setLoadInstagramFeed(true);
+        observer.disconnect();
+      },
+      { rootMargin: "500px 0px" },
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  // Keep the third-party Instagram widget off the critical loading path.
+  useEffect(() => {
+    if (!BEHOLD_FEED_ID || !loadInstagramFeed) return;
     const existing = document.querySelector('script[src*="behold.so"]');
     if (existing) return;
     const s = document.createElement("script");
     s.src = "https://w.behold.so/widget.js";
     s.type = "module";
     document.head.appendChild(s);
-  }, []);
+  }, [loadInstagramFeed]);
 
   const features = [
     {
@@ -892,7 +904,16 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
           className="absolute inset-0 pointer-events-none"
           style={{ transform: `translateY(${scrollY * 0.25}px)`, willChange: "transform" }}
         >
-          <img src={imgFrame2} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <img
+            src={imgFrame2}
+            srcSet="/images/snake-print-800.avif 800w, /images/snake-print-1600.avif 1600w"
+            sizes="100vw"
+            alt=""
+            width="1600"
+            height="1098"
+            decoding="async"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
         </div>
 
         {/* Gradient — right-to-left, text side stays readable */}
@@ -902,7 +923,7 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
         <div className="relative z-10 flex min-h-[calc(100svh-5rem)] flex-col pt-32 md:hidden">
           {/* Text content */}
           <div className="px-6 pb-8">
-            <motion.div initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }} className="space-y-7">
+            <div className="space-y-7">
               <div>
                 <p className="text-[14px] uppercase tracking-[4px] font-['Instrument_Sans',sans-serif] text-[#6B4F3A] mb-4">North Salt Lake, Utah</p>
                 <h1 className="font-['Instrument_Serif',serif] text-4xl text-[#3A291F] leading-[1.08] mb-5">
@@ -912,44 +933,48 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
                   Your Nail Girl Audrey is a private nail studio offering gel nails, acrylics, manicures, and custom nail art — every set personal, elevated, and designed for you.
                 </p>
               </div>
-            </motion.div>
+            </div>
           </div>
 
           {/* Image — full width below content */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.25 }}
-            className="relative mt-auto h-[68svh] min-h-[460px] max-h-[620px] w-full"
-          >
+          <div className="relative mt-auto h-[68svh] min-h-[460px] max-h-[620px] w-full">
             <img
               src={imgHeroImage}
+              srcSet="/images/audrey-hero-320.avif 320w, /images/audrey-hero-480.avif 480w, /images/audrey-hero-800.avif 800w, /images/audrey-hero-1200.avif 1200w"
+              sizes="40vw"
               alt="Audrey — Your Nail Girl"
+              width="1200"
+              height="2676"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
               className="w-full h-full object-contain object-bottom"
             />
-          </motion.div>
+          </div>
         </div>
 
         {/* ── Desktop layout: side-by-side, reduced height ── */}
         <div className="hidden md:block h-[70svh] min-h-[480px]">
           {/* Image — right half, absolute */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="absolute right-0 top-0 bottom-0 w-1/2 pointer-events-none"
-          >
+          <div className="absolute right-0 top-0 bottom-0 w-1/2 pointer-events-none">
             <img
               src={imgHeroImage}
+              srcSet="/images/audrey-hero-480.avif 480w, /images/audrey-hero-800.avif 800w, /images/audrey-hero-1200.avif 1200w"
+              sizes="50vw"
               alt="Audrey — Your Nail Girl"
+              width="1200"
+              height="2676"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-contain object-center"
             />
-          </motion.div>
+          </div>
 
           {/* Text — left half, vertically centered */}
           <div className="relative z-10 h-full flex items-center px-16 xl:px-24">
             <div className="w-1/2 max-w-2xl">
-              <motion.div initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }} className="space-y-8">
+              <div className="space-y-8">
                 <div>
                   
                   <h1 className="mb-5 font-['Instrument_Serif',serif] text-[96px] leading-[0.95] text-[#3a291f]">
@@ -960,7 +985,7 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
                     Audrey is a licensed nail technician who specializes in structured gel manicures, extensions and custom nail art from her private home studio.
                   </p>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </div>
         </div>
@@ -992,6 +1017,10 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
         <img
           src={imgQuietEscapeBg}
           alt=""
+          width="1600"
+          height="928"
+          loading="lazy"
+          decoding="async"
           className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
           aria-hidden
         />
@@ -1029,7 +1058,7 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
                     if (typeof Icon === "string") {
                       return (
                         <div className={circleCls}>
-                          <img src={Icon} alt={`${f.title} icon`} className="w-12 h-12 object-contain" />
+                          <img src={Icon} alt={`${f.title} icon`} width="48" height="48" loading="lazy" decoding="async" className="w-12 h-12 object-contain" />
                         </div>
                       );
                     }
@@ -1066,121 +1095,20 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
 
       {/* How It Works section removed per request */}
 
-      {/* ── Services Preview ── */}
-      <section className="hidden px-4 sm:px-6 md:px-10 lg:px-16 py-20 md:py-28 bg-cover bg-center" style={{ backgroundImage: `url(${imgQuietEscape4Bg})` }}>
-        <div className="max-w-[1200px] mx-auto rounded-[16px] bg-[#FAF5EF] px-5 py-16 sm:px-8 md:px-14 lg:px-20 md:py-[112px]">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-14 md:mb-[62px]"
-          >
-            <h2 className="font-['Instrument_Serif',serif] text-[38px] sm:text-[46px] md:text-[56px] text-[#3A291F] leading-[1.04] mb-6">
-              Nail services for every style, season, and set.
-            </h2>
-            <p className="font-['Instrument_Sans',sans-serif] text-[15px] md:text-base text-[#6B4F3A] max-w-[720px] mx-auto leading-[1.65]">
-              Whether you’re starting fresh, maintaining your current set, or adding custom details, Audrey offers services designed around your nails, your style, and your routine.
-            </p>
-          </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-x-8 lg:gap-x-10 gap-y-11 md:gap-y-[58px]">
-            {[
-              {
-                name: "Extensions",
-                desc: "Full set with added length and structure. Price varies based on length. Includes one solid color. - $50-65 base price",
-                image: imgExtensionsService,
-                imageShape: "aspect-[540/345]",
-                copyInset: "px-[5.56%]",
-                span: "md:col-span-2",
-              },
-              {
-                name: "Fill",
-                desc: "Maintenance for existing sets with one solid color. At least 7 remaining nails from your previous set or this will be booked as a new set - $45 base price",
-                image: imgFillService,
-                imageShape: "aspect-[540/345]",
-                copyInset: "px-[5.56%]",
-                span: "md:col-span-2",
-              },
-              {
-                name: "Overlay (Natural Nails)",
-                desc: "Structured overlay designed to add strength and support to your natural nails without adding length. Includes one solid color. - $45 base price",
-                image: imgOverlayService,
-                imageShape: "aspect-[540/345]",
-                copyInset: "px-[5.56%]",
-                span: "md:col-span-2",
-              },
-              {
-                name: "Gel Polish Only",
-                desc: "Gel polish applied to the natural nail with no added structure or length. Includes one solid color. - $30 base price",
-                image: imgGelPolishService,
-                imageShape: "aspect-[810/345]",
-                copyInset: "px-[3.7%]",
-                span: "md:col-span-3",
-              },
-              {
-                name: "Nail Art",
-                desc: "Select your unique nail art, with pricing tailored per nail service.",
-                image: imgNailArtService,
-                imageShape: "aspect-[810/345]",
-                copyInset: "px-[3.7%]",
-                span: "md:col-span-3",
-              },
-              {
-                name: "Nail Fix",
-                desc: "Free repair for breaks or lifting within 10 days of your appointment. After 10 days, $3 per nail. Not applicable when booking a new set.",
-                image: imgNailFixService,
-                imageShape: "aspect-[810/345]",
-                copyInset: "px-[3.7%]",
-                span: "md:col-span-3",
-              },
-              {
-                name: "Full Removal",
-                desc: "Complete removal of gel or enhancements, done safely to protect the natural nail. - $15",
-                image: imgFullRemovalService,
-                imageShape: "aspect-[810/345]",
-                copyInset: "px-[3.7%]",
-                span: "md:col-span-3",
-              },
-            ].map((s, i) => (
-              <motion.button
-                type="button"
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.07 }}
-                className={`group flex w-full cursor-pointer flex-col items-stretch appearance-none border-0 bg-transparent p-0 text-left transition-transform duration-300 hover:-translate-y-1 ${s.span}`}
-                onClick={() => navigate("services")}
-              >
-                <div className={`${s.imageShape} mb-3.5 md:mb-4 overflow-visible`}>
-                  <img
-                    src={s.image}
-                    alt={s.name}
-                    className="w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.025]"
-                  />
-                </div>
-                <div className={`-mt-5 ${s.copyInset}`}>
-                  <p className="font-['Instrument_Serif',serif] text-[24px] leading-[1.08] text-[#3a291f] mb-3">{s.name}</p>
-                  <p className="font-['Instrument_Sans',sans-serif] text-[14px] md:text-[15px] text-[#6B4F3A] leading-[1.5] mb-2.5">{s.desc}</p>
-                  <p className="font-['Instrument_Sans',sans-serif] text-[14px] font-bold text-[#6B4F3A] uppercase tracking-[0.04em] underline underline-offset-[3px] decoration-[1.5px] group-hover:no-underline transition-all">
-                    View Service
-                  </p>
-                </div>
-              </motion.button>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Live Instagram feed via Behold, or setup prompt */}
       {BEHOLD_FEED_ID ? (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.2 }} className="relative min-h-[460px] overflow-hidden bg-cover bg-center md:min-h-[500px]" style={{ backgroundImage: `url(${imgQuietEscape2Bg})` }}>
+        <motion.div ref={instagramSectionRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, delay: 0.2 }} className="relative min-h-[460px] overflow-hidden bg-cover bg-center md:min-h-[500px]" style={{ backgroundImage: `url(${imgQuietEscape2Bg})` }}>
           <div className="relative z-10 max-w-[1280px] mx-auto px-6 md:px-16 py-12 bg-transparent">
             <div className="mb-6 flex items-center justify-between">
               <h2 className="font-['Instrument_Serif',serif] text-[32px] md:text-[52px] leading-[1.05] text-[#3A291F]">My Work</h2>
             </div>
             {/* @ts-ignore */}
             <div className="bg-transparent">
-              <behold-widget feed-id={BEHOLD_FEED_ID} />
+              {loadInstagramFeed ? (
+                <behold-widget feed-id={BEHOLD_FEED_ID} />
+              ) : (
+                <div className="min-h-[320px]" aria-hidden="true" />
+              )}
             </div>
 
             <div className="mt-8 text-center">
@@ -1288,16 +1216,21 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
             ))}
           </div>
 
-          <div className="flex justify-center gap-2.5 px-6">
+          <div className="flex justify-center gap-0.5 px-6">
             {testimonials.map((t, i) => (
               <button
                 key={t.name}
                 type="button"
                 onClick={() => scrollToTestimonial(i)}
-                className={`h-2.5 rounded-full transition-all duration-300 ${activeTestimonial === i ? "w-8 bg-[#3A291F] hover:bg-[#6B4F3A]" : "w-2.5 bg-[#FFFFFF]/80 hover:bg-[#6B4F3A]"}`}
+                className="flex h-6 w-6 items-center justify-center rounded-full"
                 aria-label={`Show testimonial from ${t.name}`}
                 aria-current={activeTestimonial === i ? "true" : undefined}
-              />
+              >
+                <span
+                  aria-hidden="true"
+                  className={`h-2.5 rounded-full transition-all duration-300 ${activeTestimonial === i ? "w-5 bg-[#3A291F]" : "w-2.5 bg-[#FFFFFF]/80"}`}
+                />
+              </button>
             ))}
           </div>
         </div>
@@ -1318,12 +1251,20 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
         <img
           src={imgSDP9540}
           alt=""
+          width="600"
+          height="776"
+          loading="lazy"
+          decoding="async"
           aria-hidden="true"
           className="pointer-events-none absolute -left-16 -bottom-24 z-30 w-[260px] -rotate-[4deg] sm:w-[320px] md:w-[360px] lg:w-[420px]"
         />
         <img
           src={imgSDP9631}
           alt=""
+          width="570"
+          height="780"
+          loading="lazy"
+          decoding="async"
           aria-hidden="true"
           className="pointer-events-none absolute -right-0 -bottom-0  w-[220px] sm:w-[280px] md:w-[320px] lg:w-[380px] z-30"
         />
@@ -1373,6 +1314,9 @@ function BookNowPage({ user, navigate }: { user: AppUser | null; navigate: (p: P
   <img
     src={imgFrame2}
     alt=""
+    width="1600"
+    height="1098"
+    decoding="async"
     className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-50"
     aria-hidden
   />
@@ -1408,6 +1352,10 @@ function BookNowPage({ user, navigate }: { user: AppUser | null; navigate: (p: P
   <img
     src={imgStudio3}
     alt="Book a nail appointment with Audrey"
+    width="640"
+    height="1432"
+    fetchPriority="high"
+    decoding="async"
     className="block w-full h-full object-contain object-top"
   />
 </motion.div>
@@ -1502,6 +1450,9 @@ function PortfolioPage() {
       <img
         src={imgFrame2}
         alt=""
+        width="1600"
+        height="1098"
+        decoding="async"
         className="pointer-events-none fixed inset-0 z-0 h-full w-full object-cover opacity-50"
         aria-hidden
       />
@@ -1673,7 +1624,7 @@ function PortfolioGallery() {
           {visibleItems.map((item) => (
             <article key={item.id} className="group overflow-hidden rounded-lg bg-[#FAF5EF]">
               <div className="aspect-[4/5] overflow-hidden bg-[#F5ECE0]">
-                <img src={item.src} alt={item.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <img src={item.src} alt={item.title} width="800" height="1000" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
               </div>
             </article>
           ))}
@@ -2181,6 +2132,9 @@ function ServicesPage({ navigate }: { navigate: (p: Page, sectionId?: string) =>
   <img
     src={imgFrame2}
     alt=""
+    width="1600"
+    height="1098"
+    decoding="async"
     className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-50"
     aria-hidden
   />
@@ -2218,6 +2172,10 @@ function ServicesPage({ navigate }: { navigate: (p: Page, sectionId?: string) =>
         <img
           src={imgStudio4}
           alt="Nail services by Audrey"
+          width="640"
+          height="1360"
+          fetchPriority="high"
+          decoding="async"
           className="w-full h-full object-cover object-top"
         />
       </motion.div>
@@ -2323,6 +2281,10 @@ function ServicesPage({ navigate }: { navigate: (p: Page, sectionId?: string) =>
           <img
             src={imgSDP0128}
             alt="Audrey holding a nail file"
+            width="480"
+            height="1488"
+            loading="lazy"
+            decoding="async"
             className="absolute bottom-0 right-0 h-[320px] w-full object-contain object-bottom md:right-5 md:h-[94%] md:w-[300px]"
           />
         </motion.section>
@@ -2369,6 +2331,9 @@ function AboutPage({ navigate }: { navigate: (p: Page) => void }) {
           <img
           src={imgFrame2}
           alt=""
+          width="1600"
+          height="1098"
+          decoding="async"
           className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-50"
           aria-hidden
         />
@@ -2393,6 +2358,10 @@ function AboutPage({ navigate }: { navigate: (p: Page) => void }) {
               <img
                 src={pocket}
                 alt="Audrey, Your Nail Girl"
+                width="640"
+                height="1080"
+                fetchPriority="high"
+                decoding="async"
                 className="w-full h-full object-cover object-top"
               />
             </motion.div>
@@ -2411,6 +2380,10 @@ function AboutPage({ navigate }: { navigate: (p: Page) => void }) {
               <motion.img
                 src={imgValueProp}
                 alt="Audrey showing nail art"
+                width="510"
+                height="720"
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover object-center"
                 initial={{ scale: 1.08 }}
                 whileInView={{ scale: 1 }}
@@ -2998,7 +2971,7 @@ function DashboardPage({ user, navigate, onUpdate, onSignOut }: {
             <div className="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3">
               {user.inspoImages.map((img, i) => (
                 <div key={i} className="break-inside-avoid rounded-xl overflow-hidden bg-[#FAF5EF] relative group">
-                  <img src={img} alt={`Inspo ${i + 1}`} className="w-full h-auto object-cover" />
+                  <img src={img} alt={`Inspo ${i + 1}`} width="800" height="1000" loading="lazy" decoding="async" className="w-full h-auto object-cover" />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center">
                     <button onClick={() => setDeleting(img)}
                       aria-label="Delete image"
@@ -3434,7 +3407,7 @@ function AdminPage({ navigate }: { navigate: (p: Page) => void }) {
                 <div key={item.id} className="rounded-xl border border-[rgba(58,41,31,0.08)] bg-[#f5ece0] p-3">
                   <div className="grid grid-cols-[96px_1fr] gap-3">
                     <div className="aspect-[4/5] overflow-hidden rounded-lg bg-[#F5ECE0]">
-                      <img src={item.src} alt={item.title} className="h-full w-full object-cover" />
+                      <img src={item.src} alt={item.title} width="800" height="1000" loading="lazy" decoding="async" className="h-full w-full object-cover" />
                     </div>
                     <div className="min-w-0 space-y-2">
                       <input

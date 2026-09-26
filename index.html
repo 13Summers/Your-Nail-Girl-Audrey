@@ -1,17 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-7TV2DTH978"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-7TV2DTH978');
-</script>
-
     <meta charset="UTF-8" />
+
+    <script>
+      // Analytics is intentionally loaded after the critical view is complete.
+      window.addEventListener('load', function () {
+        var analyticsScheduled = false;
+        var loadAnalytics = function () {
+          window.dataLayer = window.dataLayer || [];
+          window.gtag = function () { window.dataLayer.push(arguments); };
+          window.gtag('js', new Date());
+          window.gtag('config', 'G-7TV2DTH978');
+
+          var script = document.createElement('script');
+          script.async = true;
+          script.src = 'https://www.googletagmanager.com/gtag/js?id=G-7TV2DTH978';
+          document.head.appendChild(script);
+        };
+
+        var scheduleAnalytics = function () {
+          if (analyticsScheduled) return;
+          analyticsScheduled = true;
+          if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(loadAnalytics, { timeout: 2000 });
+          } else {
+            window.setTimeout(loadAnalytics, 0);
+          }
+        };
+
+        ['pointerdown', 'keydown', 'scroll'].forEach(function (eventName) {
+          window.addEventListener(eventName, scheduleAnalytics, { once: true, passive: true });
+        });
+        window.setTimeout(scheduleAnalytics, 10000);
+      }, { once: true });
+    </script>
 
     <meta
       name="viewport"
@@ -37,6 +60,11 @@
       type="image/png"
       href="/favicon.png"
     />
+
+    <link rel="preload" href="/fonts/instrument-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/instrument-serif-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/images/audrey-hero-320.avif" imagesrcset="/images/audrey-hero-320.avif 320w, /images/audrey-hero-480.avif 480w, /images/audrey-hero-800.avif 800w" imagesizes="40vw" as="image" type="image/avif" media="(max-width: 767px)" fetchpriority="high" />
+    <link rel="preload" href="/images/audrey-hero-800.avif" imagesrcset="/images/audrey-hero-480.avif 480w, /images/audrey-hero-800.avif 800w, /images/audrey-hero-1200.avif 1200w" imagesizes="50vw" as="image" type="image/avif" media="(min-width: 768px)" fetchpriority="high" />
 
     <!-- Open Graph / Facebook / iMessage / LinkedIn -->
     <meta
