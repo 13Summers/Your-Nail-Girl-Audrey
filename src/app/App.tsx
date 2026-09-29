@@ -1248,15 +1248,7 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
 
       {/* ── Final CTA ── */}
       <section
-        className="relative overflow-visible px-6 md:px-16 py-20 md:py-24 text-center bg-[#FAF5EF] bg-cover bg-center"
-        style={{
-          backgroundColor: "#F2EADF",
-          backgroundImage: `linear-gradient(to bottom, #F2EADF 0%, rgba(242,234,223,0.94) 12%, rgba(242,234,223,0.76) 26%, rgba(242,234,223,0.48) 40%, rgba(242,234,223,0.22) 54%, rgba(242,234,223,0) 68%), url(${imgFinBackground})`,
-          backgroundBlendMode: "normal, multiply",
-          backgroundPosition: "center, center bottom",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover, auto 108%",
-        }}
+        className="relative overflow-visible px-6 md:px-16 py-20 md:py-24 text-center bg-[#F2EADF]"
       >
         <img
           src={imgSDP9540}
