@@ -711,71 +711,87 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
 
   const testimonials = [
     {
-      quote: "Audrey is a true nail magician! I showed her a design and she turned it into sparkling reality.",
-      name: "Tyra K.",
-      rotate: "-1.75deg",
-    },
-    {
-      name: "Emma K.",
-      quote: "Audrey is an absolute artist. I showed her a photo on Pinterest and she nailed it perfectly. My nails have never looked so good.",
+      name: "Ana R.",
+      quote: "Audrey’s work is fantastic. The material she uses is good quality and her technique is amazing!",
       rotate: "1.25deg",
     },
     {
-      quote: "The private studio vibe is everything. It's just you and Audrey, which makes it feel so relaxed and special.",
-      name: "Sarah M.",
+      quote: "Audrey is the best. Her art work is so amazing. I will literally never go to anyone else!!",
+      name: "Hannah G",
       rotate: "-1deg",
     },
+        {
+      quote: "Seriously saved my life!!! I had gotten my nails done at a different salon and they were not what I wanted at all! So when I reached out asking for a last minute appointment Audrey came in clutch! She was able to get me in and redo my nails just in time for graduation and I was obsessed to say the least! Her work was so amazing and she was so kind in making sure it looked just like the inspo photo! I couldn’t recommend her enough!!!",
+      name: "Bailey W.",
+      rotate: "-1.75deg",
+    },
     {
-      quote: "Audrey has a magical touch! My nails have never looked better, and the atmosphere is so relaxing.",
-      name: "Samantha R.",
+      quote: "The best nail tech ever! I always leave loving my nails and they hold up perfectly!",
+      name: "Ali V",
       rotate: "1.5deg",
     },
     {
-      quote: "Professional, friendly, and talented. I always leave feeling pampered and beautiful.",
-      name: "Carla D.",
+      quote: "So talented at art and nails come so naturally to her. She’s also such a girls girl.",
+      name: "Katie R.",
       rotate: "-1.35deg",
     },
     {
-      quote: "The best nail experience I've had. Attention to detail and great customer care every time.",
-      name: "Mia T.",
+      quote: "Audrey is a true nail magician! She can turn any nail inpso into sparkling reality. My nails have never looked better, and the private studio vibe is everything.",
+      name: "Summer D.",
       rotate: "1.75deg",
     },
     {
-      quote: "I always leave feeling polished and confident — Audrey is incredible.",
-      name: "Lena P.",
+      quote: "Audrey is the best nail tech!! I love catching up with her and her work is so good!!",
+      name: "Gracie T",
       rotate: "-0.8deg",
     },
     {
       quote: "Meticulous work and such a calm studio. Highly recommend.",
       name: "Nora S.",
+      hidden: true,
       rotate: "0.5deg",
     },
     {
       quote: "My nails last longer and look better than anywhere else.",
       name: "Olivia R.",
+      hidden: true,
       rotate: "-1.25deg",
     },
     {
       quote: "Perfect color matching and gorgeous finishes every time.",
       name: "Jade L.",
+      hidden: true,
       rotate: "1deg",
     },
     {
       quote: "Friendly, professional, and the art is next level.",
       name: "Hannah B.",
+      hidden: true,
       rotate: "-0.6deg",
     },
     {
       quote: "Booked again and again — Audrey always delivers.",
       name: "Maya C.",
+      hidden: true,
       rotate: "0.9deg",
     },
   ];
+
+  // Keep hidden reviews available for reuse without displaying cards or navigation dots.
+  const visibleTestimonials = testimonials.filter((testimonial) => !testimonial.hidden);
+
+  const testimonialCount = visibleTestimonials.length;
 
   const handleTestimonialScroll = useCallback(() => {
     const track = testimonialTrackRef.current;
     if (!track) return;
     const cards = Array.from(track.querySelectorAll<HTMLElement>("[data-testimonial-card]"));
+    const cycleWidth = cards[testimonialCount]?.offsetLeft - cards[0]?.offsetLeft;
+    if (cycleWidth > 0) {
+      // Move to the identical middle copy without changing the visible arrangement.
+      if (track.scrollLeft >= cycleWidth * 2) track.scrollLeft -= cycleWidth;
+      else if (track.scrollLeft < cycleWidth) track.scrollLeft += cycleWidth;
+    }
     const trackCenter = track.scrollLeft + track.clientWidth / 2;
     let closestIndex = 0;
     let closestDistance = Number.POSITIVE_INFINITY;
@@ -789,26 +805,38 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
       }
     });
 
-    setActiveTestimonial(closestIndex);
-  }, []);
+    setActiveTestimonial(closestIndex % testimonialCount);
+  }, [testimonialCount]);
 
   const scrollToTestimonial = useCallback((index: number) => {
     const track = testimonialTrackRef.current;
-    const card = track?.querySelectorAll<HTMLElement>("[data-testimonial-card]")[index];
-    if (!track || !card) return;
-    const left = card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2;
-    track.scrollTo({ left, behavior: "smooth" });
+    if (!track) return;
+    const cards = Array.from(track.querySelectorAll<HTMLElement>("[data-testimonial-card]"));
+    const candidates = cards.filter((_, cardIndex) => cardIndex % testimonialCount === index);
+    const center = track.scrollLeft + track.clientWidth / 2;
+    const card = candidates.reduce<HTMLElement | undefined>((nearest, candidate) => {
+      const distance = Math.abs(candidate.offsetLeft + candidate.offsetWidth / 2 - center);
+      const nearestDistance = nearest ? Math.abs(nearest.offsetLeft + nearest.offsetWidth / 2 - center) : Infinity;
+      return distance < nearestDistance ? candidate : nearest;
+    }, undefined);
+    if (!card) return;
+    track.scrollTo({ left: card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2, behavior: "smooth" });
     setActiveTestimonial(index);
-  }, []);
+  }, [testimonialCount]);
+
+  useLayoutEffect(() => {
+    const track = testimonialTrackRef.current;
+    if (!track) return;
+    const cards = track.querySelectorAll<HTMLElement>("[data-testimonial-card]");
+    if (cards[testimonialCount]) {
+      track.scrollLeft = cards[testimonialCount].offsetLeft - cards[0].offsetLeft;
+    }
+  }, [testimonialCount]);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
       const track = testimonialTrackRef.current;
-      if (!track) return;
-      const maxScroll = track.scrollWidth - track.clientWidth;
-      if (maxScroll > 0) {
-        track.scrollLeft = track.scrollLeft >= maxScroll ? 0 : track.scrollLeft + 1;
-      }
+      if (track) track.scrollLeft += 1;
     }, 50);
 
     return () => window.clearInterval(intervalId);
@@ -1196,18 +1224,15 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
           <div
             ref={testimonialTrackRef}
             onScroll={handleTestimonialScroll}
-            className="flex gap-8 overflow-x-auto px-6 pb-12 pt-4 md:gap-9 md:px-[max(24px,calc((100vw-1280px)/2))] md:pb-14 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="relative flex gap-8 overflow-x-auto px-6 pb-12 pt-4 md:gap-9 md:px-[max(24px,calc((100vw-1280px)/2))] md:pb-14 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             aria-label="Client testimonials"
           >
-            {testimonials.map((t, i) => (
+            {[...visibleTestimonials, ...visibleTestimonials, ...visibleTestimonials].map((t, i) => (
               <motion.div
                 key={i}
                 data-testimonial-card
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.12 }}
-                className="min-w-[246px] md:min-w-[252px]"
+                aria-hidden={i < testimonialCount || i >= testimonialCount * 2 ? true : undefined}
+                className={t.name === "Bailey W." ? "w-[664.2px] shrink-0 md:w-[680.4px]" : "w-[332.1px] shrink-0 md:w-[340.2px]"}
               >
                 <div
                   className="group relative flex flex-col overflow-hidden rounded-[12px] bg-white shadow-[0_12px_24px_rgba(44,26,14,0.06)] transition-all duration-300 md:rotate-[var(--testimonial-rotate)] hover:-translate-y-1 hover:rotate-0 hover:shadow-[0_18px_36px_rgba(44,26,14,0.08)]"
@@ -1227,7 +1252,7 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
           </div>
 
           <div className="flex justify-center gap-0.5 px-6">
-            {testimonials.map((t, i) => (
+            {visibleTestimonials.map((t, i) => (
               <button
                 key={t.name}
                 type="button"
@@ -1258,7 +1283,7 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
           loading="lazy"
           decoding="async"
           aria-hidden="true"
-          className="pointer-events-none absolute -left-16 -bottom-24 z-30 w-[260px] -rotate-[4deg] sm:w-[320px] md:w-[360px] lg:w-[420px]"
+          className="pointer-events-none absolute hidden md:block -left-16 -bottom-24 z-30 w-[260px] -rotate-[4deg] sm:w-[320px] md:w-[360px] lg:w-[420px]"
         />
         <img
           src={imgSDP9631}
@@ -1268,7 +1293,7 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
           loading="lazy"
           decoding="async"
           aria-hidden="true"
-          className="pointer-events-none absolute -right-0 -bottom-0  w-[220px] sm:w-[280px] md:w-[320px] lg:w-[380px] z-30"
+          className="pointer-events-none absolute hidden md:block -right-0 -bottom-0  w-[220px] sm:w-[280px] md:w-[320px] lg:w-[380px] z-30"
         />
         <motion.div
           initial={{ opacity: 0, y: 24 }}
