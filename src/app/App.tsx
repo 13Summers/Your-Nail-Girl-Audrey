@@ -857,6 +857,30 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
     return () => observer.disconnect();
   }, []);
 
+  const sizeInstagramFeed = useCallback((widget: HTMLElement | null) => {
+    if (!widget) return;
+    widget.onload = () => {
+      const feed = widget as HTMLElement & {
+        widgetSettings: {
+          breakpoints: Record<string, Record<string, unknown>>;
+          [key: string]: unknown;
+        };
+      };
+      const settings = feed.widgetSettings;
+      if (!settings?.breakpoints?.default) return;
+      // Preserve Behold's post styling while giving each photo more room.
+      const base = settings.breakpoints.default;
+      feed.widgetSettings = {
+        ...settings,
+        breakpoints: {
+          default: { ...base, numColumns: 3 },
+          "900": { ...base, numColumns: 2 },
+          "500": { ...base, numColumns: 1 },
+        },
+      };
+    };
+  }, []);
+
   // Keep the third-party Instagram widget off the critical loading path.
   useEffect(() => {
     if (!BEHOLD_FEED_ID || !loadInstagramFeed) return;
@@ -1141,7 +1165,7 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
             {/* @ts-ignore */}
             <div className="bg-transparent">
               {loadInstagramFeed ? (
-                <behold-widget feed-id={BEHOLD_FEED_ID} />
+                <behold-widget ref={sizeInstagramFeed} feed-id={BEHOLD_FEED_ID} />
               ) : (
                 <div className="min-h-[320px]" aria-hidden="true" />
               )}
@@ -2370,7 +2394,7 @@ function AboutPage({ navigate }: { navigate: (p: Page) => void }) {
                 <h1 className="font-['Instrument_Serif',serif] text-6xl md:text-8xl text-[#3A291F] leading-none mb-6">Hi, I'm Audrey</h1>
 
                 <p className="font-['Instrument_Sans',sans-serif] text-base text-[#6b4f3a] leading-relaxed max-w-lg">
-                — a licensed nail technician based in North Salt Lake, Utah. I opened my private studio because I believe nail appointments should feel like an experience, not an assembly line.
+                — a licensed nail technician based in North Salt Lake, Utah. I opened my private studio because I believe nail appointments should be a fun and comfortable experience.
                 </p>
               </motion.div>
             </div>
