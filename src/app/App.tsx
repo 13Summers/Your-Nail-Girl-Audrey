@@ -717,7 +717,7 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
     },
     {
       quote: "Audrey is the best. Her art work is so amazing. I will literally never go to anyone else!!",
-      name: "Hannah G",
+      name: "Hannah G.",
       rotate: "-1deg",
     },
         {
@@ -727,7 +727,7 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
     },
     {
       quote: "The best nail tech ever! I always leave loving my nails and they hold up perfectly!",
-      name: "Ali V",
+      name: "Ali V.",
       rotate: "1.5deg",
     },
     {
@@ -742,19 +742,17 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
     },
     {
       quote: "Audrey is the best nail tech!! I love catching up with her and her work is so good!!",
-      name: "Gracie T",
+      name: "Gracie T.",
       rotate: "-0.8deg",
     },
     {
-      quote: "Meticulous work and such a calm studio. Highly recommend.",
-      name: "Nora S.",
-      hidden: true,
+      quote: "Best nails I’ve gotten. She’s so patient and flexible!!",
+      name: "Taylor H.",
       rotate: "0.5deg",
     },
     {
-      quote: "My nails last longer and look better than anywhere else.",
-      name: "Olivia R.",
-      hidden: true,
+      quote: "Audrey is such a talented artist, with the FUNNEST vibe in her cute salon space.",
+      name: "Karly B.",
       rotate: "-1.25deg",
     },
     {
@@ -955,10 +953,10 @@ function HomePage({ navigate, user }: { navigate: (p: Page) => void; user: AppUs
               <div>
                 <p className="text-[14px] uppercase tracking-[4px] font-['Instrument_Sans',sans-serif] text-[#6B4F3A] mb-4">North Salt Lake, Utah</p>
                 <h1 className="font-['Instrument_Serif',serif] text-4xl text-[#3A291F] leading-[1.08] mb-5">
-                  Chic, Custom Nails in North Salt Lake
+                  Private Nail Tech in North Salt Lake
                 </h1>
                 <p className="font-['Instrument_Sans',sans-serif] text-sm text-[#6b4f3a] leading-relaxed">
-                  Your Nail Girl Audrey is a private nail studio offering gel nails, acrylics, manicures, and custom nail art — every set personal, elevated, and designed for you.
+                  Audrey is a licensed nail technician who specializes in structured gel manicures, extensions and custom nail art from her private home studio.
                 </p>
               </div>
             </div>
